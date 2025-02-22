@@ -3,37 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MindEaseAI - AI-Powered Psychologist</title>
+    <title>MindEaseAI - AI Chatbot</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-        #chatbox { width: 80%; max-width: 600px; margin: auto; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
-        #userInput { width: 70%; padding: 8px; }
-        #sendBtn { padding: 8px 15px; cursor: pointer; }
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #chatbox { width: 80%; max-width: 500px; height: 400px; border: 1px solid #ccc; padding: 10px; overflow-y: auto; margin: auto; }
+        input { width: 70%; padding: 10px; }
+        button { padding: 10px 15px; margin-left: 5px; }
     </style>
 </head>
 <body>
-    <h1>MindEaseAI - AI-Powered Psychologist</h1>
-    <div id="chatbox">
-        <p><strong>MindEaseAI:</strong> Hello! How can I help you today?</p>
-    </div>
-    <input type="text" id="userInput" placeholder="Type your message...">
+
+    <h1>MindEaseAI Chatbot</h1>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Type your message here..." />
     <button id="sendBtn">Send</button>
 
     <script>
-        document.getElementById('sendBtn').addEventListener('click', function() {
+        document.getElementById('sendBtn').addEventListener('click', async function() {
             let userText = document.getElementById('userInput').value;
             if (userText.trim() !== "") {
                 let chatbox = document.getElementById('chatbox');
                 chatbox.innerHTML += `<p><strong>You:</strong> ${userText}</p>`;
                 document.getElementById('userInput').value = "";
-                
-                // Simulated AI response
-                setTimeout(() => {
-                    let botReply = "I'm here to listen. Tell me more.";
-                    chatbox.innerHTML += `<p><strong>MindEaseAI:</strong> ${botReply}</p>`;
-                }, 1000);
+
+                // Call OpenAI API
+                let response = await fetch("https://api.openai.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer YOUR_OPENAI_API_KEY" // Replace with your OpenAI API key
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [{ role: "user", content: userText }]
+                    })
+                });
+
+                let data = await response.json();
+                let botReply = data.choices[0].message.content;
+
+                chatbox.innerHTML += `<p><strong>MindEaseAI:</strong> ${botReply}</p>`;
             }
         });
     </script>
+
 </body>
 </html>
